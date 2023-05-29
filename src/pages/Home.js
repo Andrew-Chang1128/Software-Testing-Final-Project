@@ -1,41 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { Layout, Input, Space, Tag, Divider, Form, Table } from 'antd';
 import { PageHeader } from '@ant-design/pro-layout';
-
+import { fetchAuth } from '../utils';
 const { Search } = Input;
 
-const serverAPI = '';
-
-function CustomizedForm({ onChange }) {
-  return (
-    <Form
-      layout="inline"
-      onFieldsChange={(_, allFields) => {
-        onChange(allFields);
-      }}
-    >
-      <Form.Item data-testid='search' name="search" style={{width: '50%'}}>
-        <Search
-          placeholder="Search by keyword or product ID."
-          size="middle"
-          allowClear
-        />
-      </Form.Item>
-    </Form>
-  );
-};
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Product ID', dataIndex: 'id' },
+  { title: 'TW price', dataIndex: 'priceTW' },
+  { title: 'JP price', dataIndex: 'priceJP' },
+  { title: 'URL', dataIndex: 'url' }
+];
 
 function HomeForm() {
   const isInit = useRef(true);
   const [fields, setFields] = useState([]);
   const [data, setData] = useState([]);
-  const columns = [
-    { title: 'Name', dataIndex: 'name' },
-    { title: 'Product ID', dataIndex: 'id' },
-    { title: 'TW price', dataIndex: 'priceTW' },
-    { title: 'JP price', dataIndex: 'priceJP' },
-    { title: 'URL', dataIndex: 'url' }
-  ];
 
   useEffect(() => {
     // skip first run
@@ -44,33 +24,34 @@ function HomeForm() {
       return;
     }
     // fetch api and set data
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': token
-      },
-      body: JSON.stringify(fields)
-    };
-    fetch(serverAPI, requestOptions)
-      .then((res) => res.json())
-      .then((data) => { setData(data);});
+    fetchAuth('/allRoutes/search', fields)
+      .then((resdata) => {setData(resdata);})
+      .catch((error) => {console.log('failed to fetch search api.');});
   }, [fields]);
 
   return (
     <Space direction='vertical'>
-      <CustomizedForm
-        onChange={(newFields) => {
-          setFields(newFields);
+      <Form
+        name="search"
+        layout="inline"
+        onFieldsChange={(_, allFields) => {
+          setFields({name: allFields[0].value});
         }}
-      />
+      >
+        <Form.Item data-testid='search' name="search" style={{width: '50%'}}>
+          <Search
+            placeholder="Search by keyword or product ID."
+            size="middle"
+            allowClear
+          />
+        </Form.Item>
+      </Form>
       <Table
         columns={columns}
         dataSource={data}
         pagination={false}
         scroll={{
           y: '190px',
-          scrollToFirstRowOnChange: true
         }}
       />
     </Space>

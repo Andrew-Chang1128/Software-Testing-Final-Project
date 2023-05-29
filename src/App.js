@@ -11,6 +11,8 @@ import {
 } from '@ant-design/icons';
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Home from './pages/Home';
+import Login from './pages/Login';
+import { useToken } from './utils'
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -52,9 +54,9 @@ function AppContent() {
   );
 };
 
-function App() {
+function AppAuth() {
   return (
-    <Layout className='App'>
+    <>
       <Header className="Header">
         <img src={logo} className="App-logo" alt="logo" />
       </Header>
@@ -65,9 +67,27 @@ function App() {
       <Footer style={{textAlign: 'center'}}>
         Software Testing Final Project @ 2023
       </Footer>
+    </>
+  );
+}
+
+function App() {
+  const [token, setToken] = useToken();
+  if (!token) {
+    return (
+      <Layout className="App">
+        <Login setToken={setToken} />
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout className='App'>
+      <AppAuth />
     </Layout>
   );
 }
 
 
 export default App;
+export { AppAuth };
