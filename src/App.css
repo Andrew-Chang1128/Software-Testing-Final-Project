@@ -4,15 +4,11 @@
 
 .App {
   display: flex;
-  height: 100%;
+  min-height: 100vh;
 }
 
 .App-logo {
   height: 8vmin;
-}
-
-.Content {
-  text-align: center;
 }
 
 .Header {

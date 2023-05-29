@@ -10,6 +10,8 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import Home from './pages/Home';
+
 const { Header, Footer, Sider, Content } = Layout;
 
 function AppSider() {
@@ -21,7 +23,7 @@ function AppSider() {
   };
 
   return (
-    <Sider data-testid='sider' theme='light' collapsed={collapsed} >
+    <Sider data-testid='sider' theme='light' collapsed={collapsed} style={{textAlign: 'center'}}>
       <Button data-testid='button' onClick={toggleCollapsed} style={{ margin: 10, width: "-webkit-fill-available" }}>
         {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
@@ -42,7 +44,7 @@ function AppContent() {
   return (
     <Content>
       <Routes>
-        <Route path="/" element={<div>home</div>}></Route>
+        <Route path="/" element={<Home />}></Route>
         <Route path="/favorite" element={<div>fav</div>}></Route>
         <Route path="/account" element={<div>acc</div>}></Route>
       </Routes>
@@ -56,11 +58,11 @@ function App() {
       <Header className="Header">
         <img src={logo} className="App-logo" alt="logo" />
       </Header>
-      <Layout className='Content'>
+      <Layout>
         <AppSider />
         <AppContent />
       </Layout>
-      <Footer className='Content'>
+      <Footer style={{textAlign: 'center'}}>
         Software Testing Final Project @ 2023
       </Footer>
     </Layout>
