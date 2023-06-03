@@ -135,6 +135,21 @@ describe('Server', () => {
         expect(resultJson.length).toBe(33);//successfully get routes
       });
     })
+    describe("create user", ()=>{
+      // test("successfully create user", async ()=>{
+      //   const res = await request(server.app).post("/user/createUser").send({
+      //     username: "user3",
+      //     password: "3"
+      //   });
+      // })
+      test("user already exist", async ()=>{
+        const res = await request(server.app).post("/user/createUser").send({
+          username: "user1",
+          password: "1"
+        });
+        expect(JSON.parse(res.text).error).toBe("User already exist");
+      })
+    })
   })
 })
 server.close()
