@@ -42,20 +42,15 @@ module.exports= class userController{
         // }
     };
     async createUser(req, res){
-        // const conResult = userModel.connection.connect();
-        // console.log(this.userModel)
         const userModel = new model();
-        userModel.connection.connect((err) => {
-            if (err) {
-              console.error('Error connecting to the database:', err);
-              return;
-            }
-            console.log('Connected to the database');
-          });
-
         const { username, password } = req.body;
         if (!username || !password){
             res.status(422).json({error: 'inappropriate parameters'})
+        }
+        const existResult = await userModel.checkUserExist(username);
+        if (existResult) {
+            res.status(500).json({ error: 'User already exist' });
+            return;
         }
         // Insert user information into the users table
         const result = await userModel.createUser(username, password);

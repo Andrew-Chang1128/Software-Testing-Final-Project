@@ -98,6 +98,43 @@ describe('Server', () => {
         
     //   })
     // })
+    describe("get item",()=>{
+      test("get user1 item", async ()=>{
+        const res = await request(server.app).post("/user/login").send({
+          username: "user1",
+          password: "123"
+        });
+        console.log("token: ",res.text);
+        const token = res.text;
+        const resUserItem  = await request(server.app).get("/item/userItem").set('Authorization', `Bearer ${token}`);
+        const resultJson = JSON.parse(resUserItem.text);
+        console.log(`resultJson: ${resultJson[0].id}`);
+        // console.log(`resultJson: ${resultJson}`);
+        expect(resultJson[1].id).toBe(455756);//successfully get routes
+      });
+      test("get user2 item", async ()=>{
+        const res = await request(server.app).post("/user/login").send({
+          username: "user2",
+          password: "456"
+        });
+        console.log("token: ",res.text);
+        const token = res.text;
+        const resUserItem  = await request(server.app).get("/item/userItem").set('Authorization', `Bearer ${token}`);
+        const resultJson = JSON.parse(resUserItem.text);
+        console.log(`resultJson: ${resultJson[0].id}`);
+        // console.log(`resultJson: ${resultJson}`);
+        expect(resultJson[0].id).toBe(455359);//successfully get routes
+      });
+      test("get item without loggin in (no auth token)", async ()=>{
+        const resUserItem  = await request(server.app).get("/item/userItem");
+        expect(resUserItem.text).toBe("Unauthorized");//successfully get routes
+      });
+      test("get all item", async ()=>{
+        const resItem  = await request(server.app).get("/item/all");
+        const resultJson = JSON.parse(resItem.text);
+        expect(resultJson.length).toBe(33);//successfully get routes
+      });
+    })
   })
 })
 server.close()
