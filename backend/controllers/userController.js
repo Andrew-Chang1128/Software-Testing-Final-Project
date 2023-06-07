@@ -31,6 +31,7 @@ module.exports= class userController{
             console.log(`jwtToken returned is:${jwtToken}`)
             res.json(jwtToken);
         }
+        userModel.close();
         // console.log("fetch result: ",result);
         // if (result == password){
         //     const user = {"user": username};
@@ -59,6 +60,7 @@ module.exports= class userController{
         }else{
             res.status(200).json({ message: 'User information inserted successfully' });
         }
+        userModel.close()
     };
 
 }

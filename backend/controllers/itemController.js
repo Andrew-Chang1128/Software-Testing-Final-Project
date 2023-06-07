@@ -12,6 +12,16 @@ module.exports= class driverController{
         const items = await itemModel.getAllItem();
         // console.log(items);
         res.json(items);
+        itemModel.close();
+    };
+    async searchItem(req, res){
+        //use itemModel to fetch data from db
+        const query = req.query.name;
+        const itemModel = new model();
+        const items = await itemModel.searchItem(query);
+        console.log(items);
+        res.json(items);
+        itemModel.close();
     };
     async getUserItem(req, res){
         // get user from req.user set by auth
@@ -21,6 +31,7 @@ module.exports= class driverController{
         const items = await itemModel.getUserItem(user);
         // console.log(items);
         res.json(items);
+        itemModel.close();
     };
     async addItem(req, res){
         const user = req.user;
@@ -36,6 +47,7 @@ module.exports= class driverController{
         }else{
             res.send("error")
         }
+        itemModel.close();
     };
     
 }

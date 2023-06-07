@@ -69,35 +69,26 @@ describe('Server', () => {
         })
         test("name and password are missing", async ()=>{
           const res = await request(server.app).post("/user/login").send({
-            username:"david"
+            
           })
           expect(res.text).toBe("Unauthorized!")
         })
       })
     })
     describe("JWT authorization",()=>{
-      test("use /allRoutes to test authorization (first login to get token then get allRoutes)", async()=>{
-        //get toekn
+      test("use /allRoutes to test authorization (first login to get token then get all items)", async()=>{
+        //get token
         const res = await request(server.app).post("/user/login").send({
           username: "user1",
           password: "123"
         });
         console.log("token: ",res.text);
         const token = res.text;
-        const resGetAllRoute  = await request(server.app).get("/allRoutes").set('Authorization', `Bearer ${token}`);
-        console.log("get all routes:", resGetAllRoute.text);
-        expect(resGetAllRoute.text).not.toBe("Forbidden");//successfully get routes
+        const resGetAllItem  = await request(server.app).get("/item/userItem").set('Authorization', `Bearer ${token}`);
+        console.log("get user item:", resGetAllItem.text);
+        expect(resGetAllItem.text).not.toBe("Forbidden");//successfully get item
       })
     })
-    // describe("createUser", ()=>{
-    //   test("createUser unit test", async()=>{
-    //     const res = await request(server.app).post("/user/createUser").send({
-    //       username: "user3",
-    //       password: "3"
-    //     });
-        
-    //   })
-    // })
     describe("get item",()=>{
       test("get user1 item", async ()=>{
         const res = await request(server.app).post("/user/login").send({
@@ -110,7 +101,7 @@ describe('Server', () => {
         const resultJson = JSON.parse(resUserItem.text);
         console.log(`resultJson: ${resultJson[0].id}`);
         // console.log(`resultJson: ${resultJson}`);
-        expect(resultJson[1].id).toBe(455756);//successfully get routes
+        expect(resultJson[1].id).toBe(455756);//successfully get item
       });
       test("get user2 item", async ()=>{
         const res = await request(server.app).post("/user/login").send({
@@ -122,17 +113,16 @@ describe('Server', () => {
         const resUserItem  = await request(server.app).get("/item/userItem").set('Authorization', `Bearer ${token}`);
         const resultJson = JSON.parse(resUserItem.text);
         console.log(`resultJson: ${resultJson[0].id}`);
-        // console.log(`resultJson: ${resultJson}`);
-        expect(resultJson[0].id).toBe(455359);//successfully get routes
+        expect(resultJson[0].id).toBe(455359);//successfully get item
       });
       test("get item without loggin in (no auth token)", async ()=>{
         const resUserItem  = await request(server.app).get("/item/userItem");
-        expect(resUserItem.text).toBe("Unauthorized");//successfully get routes
+        expect(resUserItem.text).toBe("Unauthorized");//successfully get item
       });
       test("get all item", async ()=>{
         const resItem  = await request(server.app).get("/item/all");
         const resultJson = JSON.parse(resItem.text);
-        expect(resultJson.length).toBe(33);//successfully get routes
+        expect(resultJson.length).toBe(33);//successfully get item
       });
     })
     describe("create user", ()=>{
@@ -149,6 +139,25 @@ describe('Server', () => {
         });
         expect(JSON.parse(res.text).error).toBe("User already exist");
       })
+     
+    })
+    describe("search item",()=>{
+      test("search  item", async ()=>{
+        const resItem  = await request(server.app).get("/item/search").query({
+          name: "男女適穿 U AIRism棉質寬版圓領T恤(五分袖)",
+        });
+        const resultJson = JSON.parse(resItem.text);
+        console.log(resultJson)
+        expect(resultJson.length).toBe(1);//successfully get item
+      });
+      test("search  item", async ()=>{
+        const resItem  = await request(server.app).get("/item/search").query({
+          name: "(五分袖)",
+        });
+        const resultJson = JSON.parse(resItem.text);
+        console.log(resultJson)
+        expect(resultJson.length).toBe(0);//successfully get item
+      });
     })
   })
 })

@@ -10,6 +10,15 @@ module.exports = class {
             database: 'STproject',
         });
     };
+    close(){
+      this.connection.end((error) => {
+        if (error) {
+          console.error('Error disconnecting from MySQL:', error);
+          return;
+        }
+        console.log('Disconnected from MySQL server');
+      });
+    }
   
     createUser(username, password){
         console.log("inserting w ", username, password);

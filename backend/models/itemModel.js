@@ -10,6 +10,15 @@ module.exports = class {
             database: 'STproject',
         });
     };
+    close(){
+      this.connection.end((error) => {
+        if (error) {
+          console.error('Error disconnecting from MySQL:', error);
+          return;
+        }
+        console.log('Disconnected from MySQL server');
+      });
+    }
     findUserIdByUsername(username) {
         return new Promise((resolve, reject) => {
           const query = 'SELECT user_id FROM users WHERE name = ?';
@@ -40,6 +49,19 @@ module.exports = class {
           });
         })
     };
+    searchItem(q){
+      const query = `SELECT * from uniqlo_product where tw_name = "${q}";`;
+      return new Promise((resolve, reject) => {
+        this.connection.query(query,[q], (err, result) => {
+          if (err) {
+              console.error('Error searching product', err);
+              reject("Error searching product!");
+          }else{
+              resolve(result);
+          }
+        });
+      })
+  };
     getUserItem(user){
         console.log(`query with username ${user}`);
         const query = 'SELECT uniqlo_product.* from uniqlo_product \
