@@ -1,5 +1,6 @@
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import Home from './Home';
+import { fetchGet } from '../utils';
 
 // mock fetch
 beforeEach(() => {
@@ -22,14 +23,14 @@ describe('Search form', () => {
   });
 
   describe('in the initial render', () => {
-    test('should not fetch the search api', () => {
-      expect(window.fetch).toHaveBeenCalledTimes(0);  
+    test('should fetch the all api', async () => {
+      expect(window.fetch).toHaveBeenCalledTimes(1); 
     });
   });
 
   describe('with empty input', () => {
     test('should display placeholder message', async () => {
-      expect(await screen.findByPlaceholderText('Search by keyword or product ID.')).toBeVisible();
+      expect(await screen.findByPlaceholderText('Search by product name.')).toBeVisible();
     });
   });
 
@@ -39,7 +40,10 @@ describe('Search form', () => {
       await act(async () => {
         fireEvent.change(inputEle, {target: {value: 'search test'}});
       });
-      const clearEle = (await screen.findByRole('img', {name: 'close-circle'}));
+      await act(async () => {
+        fireEvent.submit(inputEle);
+      });
+      const clearEle = (await screen.findByRole('button', {name: 'close-circle'}));
       expect(clearEle).toBeVisible();
     });
     
@@ -48,31 +52,41 @@ describe('Search form', () => {
       await act(async () => {
         fireEvent.change(inputEle, {target: {value: 'search test'}});
       });
-      expect(window.fetch).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        fireEvent.submit(inputEle);
+      });
+      expect(window.fetch).toHaveBeenCalledTimes(2);
     });
   });
 });
 
 // integration test on the search content in Home
 describe('Search content', () => {
-  const fakeData = [
-    { name: 'product test A', key: '0' },
-    { name: 'product test B', key: '1' }
-  ]
+  const fakeData = {
+    key: '0',
+    id: '12345',
+    tw_name: 'test tw_name',
+    jp_name: 'test jp_name',
+    tw_price: 'test tw_price',
+    jp_price: 'test jp_price',
+    tw_url: 'test tw_url',
+    jp_url: 'test jp_url'
+  };
+  
 
   beforeEach(() => {
     render(<Home />);
   });
 
   test('should display the columns of the list', async () => {
-    const colNames = ['Name', 'Product ID', 'TW price', 'JP price', 'URL'];
+    const colNames = ['Product ID', 'TW Name', 'JP Name', 'TW Price', 'JP Price'];
     colNames.forEach(async (c) => {
       expect(await screen.findByText(c)).toBeVisible();
     });
   });
 
   describe('in the initial render', () => {
-    test('should display empty message', async() => {
+    test('should display all item', async() => {
       expect(await screen.findByText('No data')).toBeVisible();      
     });
   });
@@ -80,15 +94,17 @@ describe('Search content', () => {
   describe('when search box is non-empty', () => {
     test('should display the fetched result', async () => {
       const inputEle = (await screen.findByTestId('search')).querySelector('input')
-      window.fetch.mockResolvedValueOnce({
+      window.fetch.mockResolvedValue({
         status: 200,
         json: async () => (fakeData)
       });
       await act(async () => {
-        fireEvent.change(inputEle, {target: {value: 'product test'}});
+        fireEvent.change(inputEle, {target: {value: fakeData.tw_name}});
       });
-      expect(await screen.findByText(fakeData[0].name)).toBeVisible();      
-      expect(await screen.findByText(fakeData[1].name)).toBeVisible();      
+      await act(async () => {
+        fireEvent.submit(inputEle);
+      });
+      expect(await screen.findByRole('link', {name: fakeData.tw_name})).toBeInTheDocument();
     });
   });
 
@@ -100,8 +116,11 @@ describe('Search content', () => {
         json: async () => (fakeData)
       });
       await act(async () => {
-        fireEvent.change(inputEle, {target: {value: 'product test'}});
+        fireEvent.change(inputEle, {target: {value: 'test'}});
       });
+      await act(async () => {
+        fireEvent.submit(inputEle);
+      });  
       window.fetch.mockResolvedValueOnce({
         status: 200,
         json: async () => ([])
@@ -109,6 +128,9 @@ describe('Search content', () => {
       await act(async () => {
         fireEvent.change(inputEle, {target: {value: ''}});
       });
+      await act(async () => {
+        fireEvent.submit(inputEle);
+      });  
       expect(await screen.findByText('No data')).toBeVisible();      
     });
   });

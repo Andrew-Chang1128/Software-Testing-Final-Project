@@ -11,8 +11,10 @@ import {
 } from '@ant-design/icons';
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Home from './pages/Home';
+import Fav from './pages/Fav';
 import Login from './pages/Login';
-import { useToken } from './utils'
+import Logout from './pages/Logout';
+import { useToken } from './utils';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -47,8 +49,8 @@ function AppContent() {
     <Content>
       <Routes>
         <Route path="/" element={<Home />}></Route>
-        <Route path="/favorite" element={<div>fav</div>}></Route>
-        <Route path="/account" element={<div>acc</div>}></Route>
+        <Route path="/favorite" element={<Fav />}></Route>
+        <Route path="/account" element={<Logout />}></Route>
       </Routes>
     </Content>
   );

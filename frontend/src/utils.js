@@ -1,6 +1,27 @@
 import { useState } from 'react';
 
-const SERVER_URL = 'https://test/david.exodus.tw/CloudNativeProject';
+const SERVER_URL = 'https://test/david.exodus.tw/SoftwareTestingProject';
+
+export async function fetchGet(api, auth, req) {
+  const param = new URLSearchParams(req);
+  const url = `${SERVER_URL}${api}?${param}`;
+  let headers = {'Content-Type': 'application/json'}
+  if (auth) {
+    const token = getToken();
+    headers['authorization'] = `Bearer ${token}`;
+  }
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  };
+  return fetch(url, requestOptions)
+    .then((res) => {
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) { return res.json();}
+      else {return res.text();}
+    })
+    .catch((error) => {throw error;});
+};
 
 // fetch api from unauthorized endpoint, ex: /user
 export async function fetchUnAuth(api, req) {
@@ -56,3 +77,6 @@ export function useToken() {
   return [token, saveToken];
 }
 
+export function strToNum(s) {
+  return +s.replace(/[^\d.-]/g, '');
+}
