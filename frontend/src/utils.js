@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const SERVER_URL = 'https://david.exodus.tw/SoftwareTestingProject';
+const SERVER_URL = 'https://test/david.exodus.tw/SoftwareTestingProject';
 
 export async function fetchGet(api, auth, req) {
   const param = new URLSearchParams(req);

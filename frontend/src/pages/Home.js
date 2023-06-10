@@ -11,13 +11,6 @@ function HomeForm() {
   const [data, setData] = useState([]);
   const [msg, msgHolder] = message.useMessage();
 
-  const displayError = (err) => {
-    msg.open({
-      type: 'error',
-      content: err,
-    });
-  };
-
   const columns = [
     {
       title: 'Product ID',
@@ -81,13 +74,13 @@ function HomeForm() {
   const onLoad = () => {
     fetchGet('/item/all', false,  {})
       .then((resdata) => {setData(resdata);})
-      .catch((error) => {displayError('failed to fetch all api.');});
+      .catch((error) => {msg.open({type: 'error', content: 'failed to fetch all api.'});});
   };
 
   const onFinish = (values) => {
     fetchGet('/item/search', false, values)
       .then((resdata) => {setData(resdata);})
-      .catch((error) => {displayError('failed to fetch search api.');});
+      .catch((error) => {msg.open({type: 'error', content: 'failed to fetch search api.'});});
   };
 
   useEffect(() => {
@@ -102,11 +95,12 @@ function HomeForm() {
         layout="inline"
         onFinish={onFinish}
       >
-        <Form.Item data-testid='search' name="itemID" style={{width: '50%'}}>
+        <Form.Item data-testid='search' name="name" style={{width: '50%'}}>
           <Search
-            placeholder="Search by product ID."
+            placeholder="Search by product name."
             size="middle"
             allowClear
+            autoComplete='false'
           />
         </Form.Item>
       </Form>
@@ -134,7 +128,7 @@ function HomeTags() {
 
 function Home() {
   const description = "Exchange Rate Difference (ERD) app is a tool for finding the ERD between TWD & JPY of the given UNIQLO products.";
-  const hint = "Search for the product difference by typing the product ID."
+  const hint = "Search for the product difference by typing the product name."
   return (
     <Layout style={{ padding: '24px 24px 0'}}>
       <PageHeader
